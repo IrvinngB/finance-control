@@ -5,10 +5,13 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { addTransaction } from '../actions'
+import { useTransition } from 'react'
 
 export default function TransactionForm() {
   const [type, setType] = useState('expense')
   const [description, setDescription] = useState('')
+  const [isPending, startTransition] = useTransition()
 
   const predefinedDescriptions = {
     expense: [
@@ -35,16 +38,32 @@ export default function TransactionForm() {
     ]
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
-    const data = {
-      amount: formData.get('amount'),
-      description: formData.get('description') === 'custom' ? formData.get('customDescription') : formData.get('description'),
-      type: formData.get('type'),
-      date: formData.get('date')
-    }
-    console.log('Transaction data:', data)
+    
+    // Procesar la descripción personalizada si es necesario
+    const finalDescription = formData.get('description') === 'custom' 
+      ? formData.get('customDescription') 
+      : formData.get('description')
+
+    // Crear el FormData final
+    const finalFormData = new FormData()
+    finalFormData.append('amount', formData.get('amount'))
+    finalFormData.append('description', finalDescription)
+    finalFormData.append('type', formData.get('type'))
+    finalFormData.append('date', formData.get('date'))
+
+    startTransition(async () => {
+      try {
+        await addTransaction(finalFormData)
+        // Limpiar el formulario después de un envío exitoso
+        event.target.reset()
+        setDescription('')
+      } catch (error) {
+        console.error('Error al agregar la transacción:', error)
+      }
+    })
   }
 
   return (
@@ -74,7 +93,7 @@ export default function TransactionForm() {
                 {predefinedDescriptions[type].map((desc) => (
                   <SelectItem key={desc} value={desc}>{desc}</SelectItem>
                 ))}
-                <SelectItem value="Otros">Otros</SelectItem>
+                <SelectItem value="custom">Otros</SelectItem>
               </SelectContent>
             </Select>
             {description === 'custom' && (
@@ -112,7 +131,13 @@ export default function TransactionForm() {
               required
             />
           </div>
-          <Button type="submit" className="w-full">Agregar Transacción</Button>
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={isPending}
+          >
+            {isPending ? "Agregando..." : "Agregar Transacción"}
+          </Button>
         </form>
       </CardContent>
     </Card>
