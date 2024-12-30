@@ -35,7 +35,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
     const date = new Date(transaction.date)
     const month = date.toLocaleString('default', { month: 'short' })
 
-    // Tipo explícito en find
+    // Asegurando el tipo explícito para acc
     const existingMonth = acc.find((item: MonthlyData) => item.name === month)
 
     if (existingMonth) {
@@ -53,7 +53,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
     }
 
     return acc
-  }, [])
+  }, [] as MonthlyData[]) // Especificando el tipo explícito de `acc`
 
   const data = Object.values(monthlyData)
 
