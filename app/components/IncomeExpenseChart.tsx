@@ -33,9 +33,9 @@ interface IncomeExpenseChartProps {
 export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartProps) {
   const monthlyData = transactions.reduce((acc: MonthlyData[], transaction) => {
     const date = new Date(transaction.date)
-    const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`
+    const month = date.toLocaleString('default', { month: 'short' })
 
-    const existingMonth = acc.find((item) => item.name === monthYear)
+    const existingMonth = acc.find((item: MonthlyData) => item.name === month) // Tipo explícito para item
 
     if (existingMonth) {
       if (transaction.type === 'income') {
@@ -45,7 +45,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
       }
     } else {
       acc.push({
-        name: monthYear,
+        name: month,
         ingresos: transaction.type === 'income' ? transaction.amount : 0,
         gastos: transaction.type === 'expense' ? transaction.amount : 0
       })
