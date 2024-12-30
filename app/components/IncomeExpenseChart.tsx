@@ -35,6 +35,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
     const date = new Date(transaction.date)
     const month = date.toLocaleString('default', { month: 'short' })
 
+    // Tipo explícito en find
     const existingMonth = acc.find((item: MonthlyData) => item.name === month)
 
     if (existingMonth) {
