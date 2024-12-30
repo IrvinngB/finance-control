@@ -18,9 +18,9 @@ const IncomeChart = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Especificar correctamente el tipo de la tabla 'transactions'
+      // Realiza la consulta sin tipar directamente el 'from'
       const { data: transactions, error } = await supabase
-        .from<Transaction>('transactions') // Especificamos el tipo de datos 'Transaction'
+        .from('transactions') // El tipo 'Transaction' ya no se pasa aquí
         .select('*')
         .order('created_at', { ascending: true })
 
@@ -29,8 +29,11 @@ const IncomeChart = () => {
         return
       }
 
+      // Aseguramos que los datos obtenidos sean del tipo esperado
+      const typedTransactions: Transaction[] = transactions as Transaction[]
+
       // Procesar los datos para el gráfico
-      const processedData = transactions.reduce((acc, transaction) => {
+      const processedData = typedTransactions.reduce((acc, transaction) => {
         const date = new Date(transaction.created_at)
         const month = date.toLocaleString('default', { month: 'short' })
         
