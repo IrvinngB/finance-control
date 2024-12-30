@@ -5,14 +5,26 @@ import { Chart } from "@/components/ui/chart"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useEffect, useState } from "react"
 
+interface Transaction {
+  created_at: string
+  amount: number
+  type: 'income' | 'expense'
+}
+
+interface MonthlyData {
+  name: string
+  income: number
+  expenses: number
+}
+
 const IncomeChart = () => {
-  const [data, setData] = useState([])
+  const [data, setData] = useState<MonthlyData[]>([])  // Especificamos el tipo de datos aquí
   const supabase = createClientComponentClient()
 
   useEffect(() => {
     const fetchData = async () => {
       const { data: transactions, error } = await supabase
-        .from('transactions')
+        .from<Transaction>('transactions')  // Especificamos el tipo de la tabla
         .select('*')
         .order('created_at', { ascending: true })
 
@@ -22,10 +34,10 @@ const IncomeChart = () => {
       }
 
       // Procesar los datos para el formato del gráfico
-      const processedData = transactions.reduce((acc, transaction) => {
+      const processedData = transactions.reduce<MonthlyData[]>((acc, transaction) => {
         const date = new Date(transaction.created_at)
         const month = date.toLocaleString('default', { month: 'short' })
-        
+
         const existingMonth = acc.find(item => item.name === month)
         if (existingMonth) {
           if (transaction.type === 'income') {
@@ -50,14 +62,21 @@ const IncomeChart = () => {
   }, [])
 
   return (
-    <Chart
-      title="Ingresos vs Gastos"
-      data={data}
-      categories={[
-        { name: "income", color: "hsl(var(--primary))" },
-        { name: "expenses", color: "hsl(var(--destructive))" }
-      ]}
-    />
+    <Card>
+      <CardHeader>
+        <CardTitle>Ingresos vs Gastos</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Chart
+          title="Ingresos vs Gastos"
+          data={data}
+          categories={[
+            { name: "income", color: "hsl(var(--primary))" },
+            { name: "expenses", color: "hsl(var(--destructive))" }
+          ]}
+        />
+      </CardContent>
+    </Card>
   )
 }
 
