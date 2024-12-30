@@ -20,27 +20,39 @@ interface Transaction {
   date: string
 }
 
+interface MonthlyData {
+  name: string
+  ingresos: number
+  gastos: number
+}
+
 interface IncomeExpenseChartProps {
   transactions: Transaction[]
 }
 
 export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartProps) {
-  const monthlyData = transactions.reduce((acc, t) => {
-    const date = new Date(t.date)
+  const monthlyData = transactions.reduce((acc: MonthlyData[], transaction) => {
+    const date = new Date(transaction.date)
     const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`
-    
-    if (!acc[monthYear]) {
-      acc[monthYear] = { name: monthYear, ingresos: 0, gastos: 0 }
-    }
-    
-    if (t.type === 'income') {
-      acc[monthYear].ingresos += t.amount
+
+    const existingMonth = acc.find((item) => item.name === monthYear)
+
+    if (existingMonth) {
+      if (transaction.type === 'income') {
+        existingMonth.ingresos += transaction.amount
+      } else {
+        existingMonth.gastos += transaction.amount
+      }
     } else {
-      acc[monthYear].gastos += t.amount
+      acc.push({
+        name: monthYear,
+        ingresos: transaction.type === 'income' ? transaction.amount : 0,
+        gastos: transaction.type === 'expense' ? transaction.amount : 0
+      })
     }
-    
+
     return acc
-  }, {} as Record<string, { name: string; ingresos: number; gastos: number }>)
+  }, [])
 
   const data = Object.values(monthlyData)
 
@@ -98,4 +110,3 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
     </Card>
   )
 }
-
