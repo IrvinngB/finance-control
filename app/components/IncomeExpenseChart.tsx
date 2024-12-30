@@ -35,7 +35,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
     const date = new Date(transaction.date)
     const month = date.toLocaleString('default', { month: 'short' })
 
-    const existingMonth = acc.find((item: MonthlyData) => item.name === month) // Tipo explícito para item
+    const existingMonth = acc.find((item: MonthlyData) => item.name === month)
 
     if (existingMonth) {
       if (transaction.type === 'income') {
@@ -58,7 +58,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
 
   if (data.length === 0) {
     return (
-      <Card className="w-full">
+      <Card>
         <CardHeader>
           <CardTitle>Comparación de Ingresos y Gastos</CardTitle>
         </CardHeader>
@@ -70,42 +70,22 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
   }
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
         <CardTitle>Comparación de Ingresos y Gastos</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis
-                dataKey="name"
-                stroke="#39FF14"
-              />
-              <YAxis
-                stroke="#39FF14"
-                tickFormatter={(value) => `$${value}`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #39FF14',
-                  color: '#39FF14'
-                }}
-                formatter={(value) => `$${value}`}
-              />
-              <Legend
-                formatter={(value) => {
-                  const formattedValue = value.charAt(0).toUpperCase() + value.slice(1)
-                  return <span style={{ color: '#39FF14' }}>{formattedValue}</span>
-                }}
-              />
-              <Bar dataKey="ingresos" fill="#39FF14" />
-              <Bar dataKey="gastos" fill="#FF3939" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip formatter={(value: number) => `$${value}`} />
+            <Legend formatter={(value: string) => value.charAt(0).toUpperCase() + value.slice(1)} />
+            <Bar dataKey="ingresos" fill="#4caf50" name="Ingresos" />
+            <Bar dataKey="gastos" fill="#f44336" name="Gastos" />
+          </BarChart>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   )
