@@ -24,9 +24,10 @@ const IncomeChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       const { data: transactions, error } = await supabase
-        .from<Transaction>('transactions')  // Especificamos el tipo de la tabla
-        .select('*')
-        .order('created_at', { ascending: true })
+      .from<Transaction, { error: any }>('transactions') // Especificamos el tipo de la tabla y el tipo de error
+      .select('*')
+      .order('created_at', { ascending: true })
+
 
       if (error) {
         console.error('Error fetching data:', error)
