@@ -31,34 +31,30 @@ interface IncomeExpenseChartProps {
 }
 
 export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartProps) {
-  const monthlyData = transactions.reduce((acc: MonthlyData[], transaction) => {
+  const monthlyData: MonthlyData[] = []
+
+  transactions.forEach(transaction => {
     const date = new Date(transaction.date)
     const month = date.toLocaleString('default', { month: 'short' })
 
-    // Ignorar error de tipo en esta línea
-    // @ts-ignore
-    const existingMonth = acc.find(item => item.name === month)
+    // Buscar si ya existe un mes con el nombre correspondiente
+    let existingMonth = monthlyData.find(item => item.name === month)
 
-    if (existingMonth) {
-      if (transaction.type === 'income') {
-        existingMonth.ingresos += transaction.amount
-      } else {
-        existingMonth.gastos += transaction.amount
-      }
-    } else {
-      acc.push({
-        name: month,
-        ingresos: transaction.type === 'income' ? transaction.amount : 0,
-        gastos: transaction.type === 'expense' ? transaction.amount : 0
-      })
+    if (!existingMonth) {
+      // Si no existe, crear un nuevo mes
+      existingMonth = { name: month, ingresos: 0, gastos: 0 }
+      monthlyData.push(existingMonth)
     }
 
-    return acc
-  }, [] as MonthlyData[]) // Especificando el tipo explícito de `acc`
+    // Actualizar los valores de ingresos o gastos según el tipo de transacción
+    if (transaction.type === 'income') {
+      existingMonth.ingresos += transaction.amount
+    } else {
+      existingMonth.gastos += transaction.amount
+    }
+  })
 
-  const data = Object.values(monthlyData)
-
-  if (data.length === 0) {
+  if (monthlyData.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -78,7 +74,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={data}>
+          <BarChart data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
