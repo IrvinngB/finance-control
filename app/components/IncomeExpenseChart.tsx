@@ -53,7 +53,7 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
           <CardTitle>Comparación de Ingresos y Gastos</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>No hay datos de ingresos y gastos disponibles.</p>
+          <p className="text-muted-foreground">No hay datos disponibles.</p>
         </CardContent>
       </Card>
     )
@@ -74,7 +74,11 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
                 { top: 20, right: 30, left: 20, bottom: 5 }
               }
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke="var(--border)"
+                opacity={0.3}
+              />
               <XAxis
                 dataKey="name"
                 fontSize={12}
@@ -89,9 +93,10 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'var(--background)',
+                  backgroundColor: 'var(--card)',
                   border: '1px solid var(--border)',
-                  borderRadius: '0.5rem'
+                  borderRadius: '0.5rem',
+                  color: 'var(--foreground)'
                 }}
                 formatter={(value: number) => `$${value.toFixed(2)}`}
               />
@@ -105,12 +110,12 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
               />
               <Bar 
                 dataKey="ingresos" 
-                fill="var(--primary)" 
+                fill="#00ff87"
                 radius={[4, 4, 0, 0]}
               />
               <Bar 
                 dataKey="gastos" 
-                fill="var(--destructive)" 
+                fill="#ff3d71"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

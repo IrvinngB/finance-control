@@ -28,7 +28,17 @@ export default function ExpenseChart({ transactions }: ExpenseChartProps) {
       return acc
     }, [] as { name: string; value: number }[])
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+  // Bright, high-contrast colors that work well on dark backgrounds
+  const COLORS = [
+    '#00ff87', // Bright green
+    '#00bfff', // Bright blue
+    '#ff3d71', // Bright pink
+    '#ffaa00', // Bright orange
+    '#bf00ff', // Bright purple
+    '#ff3d00', // Bright red
+    '#00e5ff', // Cyan
+    '#ffff00', // Yellow
+  ]
 
   if (expenseData.length === 0) {
     return (
@@ -37,7 +47,7 @@ export default function ExpenseChart({ transactions }: ExpenseChartProps) {
           <CardTitle>Distribución de Gastos</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>No hay datos de gastos disponibles.</p>
+          <p className="text-muted-foreground">No hay datos de gastos disponibles.</p>
         </CardContent>
       </Card>
     )
@@ -59,7 +69,7 @@ export default function ExpenseChart({ transactions }: ExpenseChartProps) {
                 innerRadius={window?.innerWidth < 500 ? 30 : 60}
                 outerRadius={window?.innerWidth < 500 ? 60 : 80}
                 fill="#8884d8"
-                paddingAngle={2}
+                paddingAngle={4}
                 dataKey="value"
                 label={({ name, percent }) => 
                   window?.innerWidth < 500 ? 
@@ -72,22 +82,27 @@ export default function ExpenseChart({ transactions }: ExpenseChartProps) {
                   <Cell 
                     key={`cell-${index}`} 
                     fill={COLORS[index % COLORS.length]}
+                    stroke="rgba(0,0,0,0.3)"
+                    strokeWidth={2}
                   />
                 ))}
               </Pie>
               <Tooltip
                 formatter={(value: number) => `$${value.toFixed(2)}`}
                 contentStyle={{ 
-                  backgroundColor: 'var(--background)',
+                  backgroundColor: 'var(--card)',
                   border: '1px solid var(--border)',
-                  borderRadius: '0.5rem'
+                  borderRadius: '0.5rem',
+                  color: 'var(--foreground)'
                 }}
               />
               <Legend
                 layout={window?.innerWidth < 500 ? "horizontal" : "vertical"}
                 align={window?.innerWidth < 500 ? "center" : "right"}
                 verticalAlign={window?.innerWidth < 500 ? "bottom" : "middle"}
-                wrapperStyle={window?.innerWidth < 500 ? { fontSize: '12px' } : undefined}
+                formatter={(value) => (
+                  <span style={{ color: 'var(--foreground)' }}>{value}</span>
+                )}
               />
             </PieChart>
           </ResponsiveContainer>

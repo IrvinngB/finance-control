@@ -1,6 +1,8 @@
 import { getTransactions } from '../actions'
 import ExpenseChart from '../components/ExpenseChart'
 import IncomeExpenseChart from '../components/IncomeExpenseChart'
+import IncomeChart from '../components/IncomeChart'
+import PurchasePlanner from '../components/PurchasePlanner'
 
 export default async function Graficas() {
   const transactions = await getTransactions()
@@ -12,6 +14,11 @@ export default async function Graficas() {
       <div className="grid gap-8 md:grid-cols-2">
         <ExpenseChart transactions={transactions} />
         <IncomeExpenseChart transactions={transactions} />
+      </div>
+
+      <div className="grid gap-8 md:grid-cols-2">
+        <IncomeChart transactions={transactions} />
+        <PurchasePlanner />
       </div>
     </div>
   )
