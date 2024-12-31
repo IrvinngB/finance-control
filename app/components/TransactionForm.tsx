@@ -38,27 +38,24 @@ export default function TransactionForm() {
     ]
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const formData = new FormData(event.target)
+    const formData = new FormData(event.currentTarget)
     
-    // Procesar la descripción personalizada si es necesario
     const finalDescription = formData.get('description') === 'custom' 
       ? formData.get('customDescription') 
       : formData.get('description')
 
-    // Crear el FormData final
     const finalFormData = new FormData()
-    finalFormData.append('amount', formData.get('amount'))
-    finalFormData.append('description', finalDescription)
-    finalFormData.append('type', formData.get('type'))
-    finalFormData.append('date', formData.get('date'))
+    finalFormData.append('amount', formData.get('amount') as string)
+    finalFormData.append('description', finalDescription as string)
+    finalFormData.append('type', formData.get('type') as string)
+    finalFormData.append('date', formData.get('date') as string)
 
     startTransition(async () => {
       try {
         await addTransaction(finalFormData)
-        // Limpiar el formulario después de un envío exitoso
-        event.target.reset()
+        event.currentTarget.reset()
         setDescription('')
       } catch (error) {
         console.error('Error al agregar la transacción:', error)
@@ -67,9 +64,9 @@ export default function TransactionForm() {
   }
 
   return (
-    <Card>
+    <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Agregar Transacción</CardTitle>
+        <CardTitle className="text-xl md:text-2xl">Agregar Transacción</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,14 +76,14 @@ export default function TransactionForm() {
               type="number"
               id="amount"
               name="amount"
-              className="mt-1"
+              className="mt-1 w-full"
               required
             />
           </div>
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-400">Descripción</label>
             <Select name="description" value={description} onValueChange={setDescription}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 w-full">
                 <SelectValue placeholder="Selecciona la descripción" />
               </SelectTrigger>
               <SelectContent>
@@ -100,7 +97,7 @@ export default function TransactionForm() {
               <Input
                 type="text"
                 name="customDescription"
-                className="mt-2"
+                className="mt-2 w-full"
                 placeholder="Ingresa descripción personalizada"
                 required
               />
@@ -109,10 +106,10 @@ export default function TransactionForm() {
           <div>
             <label htmlFor="type" className="block text-sm font-medium text-gray-400">Tipo</label>
             <Select name="type" value={type} onValueChange={(value) => {
-              setType(value)
+              setType(value as 'expense' | 'income')
               setDescription('')
             }}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 w-full">
                 <SelectValue placeholder="Selecciona el tipo" />
               </SelectTrigger>
               <SelectContent>
@@ -127,7 +124,7 @@ export default function TransactionForm() {
               type="date"
               id="date"
               name="date"
-              className="mt-1"
+              className="mt-1 w-full"
               required
             />
           </div>
@@ -143,3 +140,4 @@ export default function TransactionForm() {
     </Card>
   )
 }
+

@@ -5,7 +5,8 @@ import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 export async function getTransactionSummary() {
-  const supabase = createServerActionClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -33,7 +34,8 @@ export async function getTransactionSummary() {
 }
 
 export async function addTransaction(formData: FormData) {
-  const supabase = createServerActionClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -64,7 +66,8 @@ export async function addTransaction(formData: FormData) {
 }
 
 export async function getTransactions() {
-  const supabase = createServerActionClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -81,7 +84,8 @@ export async function getTransactions() {
 }
 
 export async function updateTransaction(id: number, formData: FormData) {
-  const supabase = createServerActionClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -111,7 +115,8 @@ export async function updateTransaction(id: number, formData: FormData) {
 }
 
 export async function deleteTransaction(id: number) {
-  const supabase = createServerActionClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')

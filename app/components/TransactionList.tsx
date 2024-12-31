@@ -24,12 +24,12 @@ export default async function TransactionList() {
   const transactions = await getTransactions()
 
   return (
-    <div className="rounded-md border">
+    <div className="w-full overflow-x-auto">
       <Table>
         <TableCaption>Lista de transacciones recientes</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Fecha</TableHead>
+            <TableHead className="w-[100px]">Fecha</TableHead>
             <TableHead>Descripción</TableHead>
             <TableHead>Tipo</TableHead>
             <TableHead className="text-right">Monto</TableHead>
@@ -39,7 +39,7 @@ export default async function TransactionList() {
         <TableBody>
           {transactions.map((transaction) => (
             <TableRow key={transaction.id}>
-              <TableCell>{transaction.date}</TableCell>
+              <TableCell className="font-medium">{transaction.date}</TableCell>
               <TableCell>{transaction.description}</TableCell>
               <TableCell>{transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</TableCell>
               <TableCell className={`text-right ${
@@ -51,11 +51,11 @@ export default async function TransactionList() {
                 <div className="flex justify-end gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="sm">
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
                         <DialogTitle>Editar Transacción</DialogTitle>
                       </DialogHeader>
@@ -102,7 +102,7 @@ export default async function TransactionList() {
                     </DialogContent>
                   </Dialog>
                   <form action={deleteTransaction.bind(null, transaction.id)}>
-                    <Button variant="ghost" size="icon" type="submit">
+                    <Button variant="ghost" size="sm" type="submit">
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </form>

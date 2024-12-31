@@ -20,7 +20,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = createServerComponentClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const { data: { session } } = await supabase.auth.getSession()
 
   return (
@@ -32,11 +33,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen bg-background text-foreground">
+          <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">
             {session && (
-              <nav className="w-64 bg-card p-4">
+              <nav className="w-full md:w-64 bg-card p-4">
                 <div className="flex items-center justify-between mb-8">
-                  <h1 className="text-2xl font-bold">Control de Finanzas</h1>
+                  <h1 className="text-xl md:text-2xl font-bold">Control de Finanzas</h1>
                   <ThemeToggle />
                 </div>
                 <ul className="space-y-2">
@@ -75,7 +76,7 @@ export default async function RootLayout({
                 </div>
               </nav>
             )}
-            <main className="flex-1 p-8">
+            <main className="flex-1 p-4 md:p-8">
               {children}
             </main>
           </div>
