@@ -3,18 +3,28 @@
 import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
+import { Database } from '@/types/supabase'
 
-export async function getTransactionSummary() {
+interface TransactionSummary {
+  totalIncome: number
+  totalExpenses: number
+  balance: number
+  remainingBudget: number
+}
+
+export async function getTransactionSummary(): Promise<TransactionSummary> {
   const cookieStore = cookies()
-  const supabase = createServerActionClient({ cookies: () => cookieStore })
+  const supabase = createServerActionClient<Database>({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
 
-  const { data: transactions } = await supabase
+  const { data: transactions, error } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_id', user.id)
+
+  if (error) throw error
 
   const summary = transactions?.reduce((acc, transaction) => {
     if (transaction.type === 'income') {
@@ -29,13 +39,13 @@ export async function getTransactionSummary() {
     totalIncome: summary?.totalIncome || 0,
     totalExpenses: summary?.totalExpenses || 0,
     balance: (summary?.totalIncome || 0) - (summary?.totalExpenses || 0),
-    remainingBudget: 0 // This will be updated when we implement budget functionality
+    remainingBudget: 0
   }
 }
 
 export async function addTransaction(formData: FormData) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient({ cookies: () => cookieStore })
+  const supabase = createServerActionClient<Database>({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -44,6 +54,10 @@ export async function addTransaction(formData: FormData) {
   const description = formData.get('description') as string
   const type = formData.get('type') as 'income' | 'expense'
   const date = formData.get('date') as string
+
+  if (isNaN(amount) || !description || !type || !date) {
+    throw new Error('Invalid form data')
+  }
 
   const { error } = await supabase
     .from('transactions')
@@ -67,7 +81,7 @@ export async function addTransaction(formData: FormData) {
 
 export async function getTransactions() {
   const cookieStore = cookies()
-  const supabase = createServerActionClient({ cookies: () => cookieStore })
+  const supabase = createServerActionClient<Database>({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -85,7 +99,7 @@ export async function getTransactions() {
 
 export async function updateTransaction(id: number, formData: FormData) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient({ cookies: () => cookieStore })
+  const supabase = createServerActionClient<Database>({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')
@@ -94,6 +108,10 @@ export async function updateTransaction(id: number, formData: FormData) {
   const description = formData.get('description') as string
   const type = formData.get('type') as 'income' | 'expense'
   const date = formData.get('date') as string
+
+  if (isNaN(amount) || !description || !type || !date) {
+    throw new Error('Invalid form data')
+  }
 
   const { error } = await supabase
     .from('transactions')
@@ -116,7 +134,7 @@ export async function updateTransaction(id: number, formData: FormData) {
 
 export async function deleteTransaction(id: number) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient({ cookies: () => cookieStore })
+  const supabase = createServerActionClient<Database>({ cookies: () => cookieStore })
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('No user found')

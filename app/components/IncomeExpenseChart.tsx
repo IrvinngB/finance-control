@@ -27,7 +27,9 @@ interface IncomeExpenseChartProps {
 export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartProps) {
   const monthlyData = transactions.reduce((acc, t) => {
     const date = new Date(t.date)
-    const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`
+    const monthYear = window?.innerWidth < 500 ? 
+      `${date.getMonth() + 1}/${date.getFullYear().toString().slice(2)}` :
+      `${date.getMonth() + 1}/${date.getFullYear()}`
     
     if (!acc[monthYear]) {
       acc[monthYear] = { name: monthYear, ingresos: 0, gastos: 0 }
@@ -63,34 +65,54 @@ export default function IncomeExpenseChart({ transactions }: IncomeExpenseChartP
         <CardTitle>Comparación de Ingresos y Gastos</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="h-[300px] w-full min-h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <BarChart 
+              data={data}
+              margin={window?.innerWidth < 500 ? 
+                { top: 20, right: 10, left: -10, bottom: 0 } :
+                { top: 20, right: 30, left: 20, bottom: 5 }
+              }
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 dataKey="name"
-                stroke="#39FF14"
+                fontSize={12}
+                tickMargin={8}
+                stroke="var(--foreground)"
               />
               <YAxis
-                stroke="#39FF14"
+                fontSize={12}
+                tickMargin={8}
+                stroke="var(--foreground)"
                 tickFormatter={(value) => `$${value}`}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #39FF14',
-                  color: '#39FF14'
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '0.5rem'
                 }}
-                formatter={(value) => `$${value}`}
+                formatter={(value: number) => `$${value.toFixed(2)}`}
               />
               <Legend
+                verticalAlign={window?.innerWidth < 500 ? "top" : "bottom"}
+                height={36}
                 formatter={(value) => {
                   const formattedValue = value.charAt(0).toUpperCase() + value.slice(1)
-                  return <span style={{ color: '#39FF14' }}>{formattedValue}</span>
+                  return <span style={{ color: 'var(--foreground)' }}>{formattedValue}</span>
                 }}
               />
-              <Bar dataKey="ingresos" fill="#39FF14" />
-              <Bar dataKey="gastos" fill="#FF3939" />
+              <Bar 
+                dataKey="ingresos" 
+                fill="var(--primary)" 
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar 
+                dataKey="gastos" 
+                fill="var(--destructive)" 
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
