@@ -49,33 +49,45 @@ export default function ExpenseChart({ transactions }: ExpenseChartProps) {
         <CardTitle>Distribución de Gastos</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="h-[300px] w-full min-h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <Pie
                 data={expenseData}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                innerRadius={window?.innerWidth < 500 ? 30 : 60}
+                outerRadius={window?.innerWidth < 500 ? 60 : 80}
                 fill="#8884d8"
+                paddingAngle={2}
                 dataKey="value"
+                label={({ name, percent }) => 
+                  window?.innerWidth < 500 ? 
+                    `${(percent * 100).toFixed(0)}%` : 
+                    `${name} (${(percent * 100).toFixed(0)}%)`
+                }
+                labelLine={window?.innerWidth >= 500}
               >
                 {expenseData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => `$${value}`}
-                contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #39FF14' }}
-                labelStyle={{ color: '#39FF14' }}
+                formatter={(value: number) => `$${value.toFixed(2)}`}
+                contentStyle={{ 
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '0.5rem'
+                }}
               />
               <Legend
-                layout="vertical"
-                align="right"
-                verticalAlign="middle"
-                formatter={(value) => <span style={{ color: '#39FF14' }}>{value}</span>}
+                layout={window?.innerWidth < 500 ? "horizontal" : "vertical"}
+                align={window?.innerWidth < 500 ? "center" : "right"}
+                verticalAlign={window?.innerWidth < 500 ? "bottom" : "middle"}
+                wrapperStyle={window?.innerWidth < 500 ? { fontSize: '12px' } : undefined}
               />
             </PieChart>
           </ResponsiveContainer>
