@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Calendar } from '@/components/calendar'
 import {
   Popover,
   PopoverContent,
@@ -14,6 +13,8 @@ import { format } from "date-fns"
 import { es } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
+import { DayPicker } from "react-day-picker"
+import "react-day-picker/dist/style.css"
 
 interface PurchasePlan {
   canBuyNow: boolean
@@ -130,36 +131,12 @@ export default function PurchasePlanner() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <DayPicker
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  initialFocus
                   disabled={isDateDisabled}
                   locale={es}
-                  className="rounded-md border"
-                  classNames={{
-                    months: "space-y-4",
-                    month: "space-y-4",
-                    caption: "flex justify-center pt-1 relative items-center",
-                    caption_label: "text-sm font-medium",
-                    nav: "space-x-1 flex items-center",
-                    table: "w-full border-collapse space-y-1",
-                    head_row: "flex",
-                    head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
-                    row: "flex w-full mt-2",
-                    cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
-                    day: cn(
-                      "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      "focus:bg-accent focus:text-accent-foreground"
-                    ),
-                    day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                    day_today: "bg-accent text-accent-foreground",
-                    day_outside: "text-muted-foreground opacity-50",
-                    day_disabled: "text-muted-foreground opacity-50",
-                    day_hidden: "invisible",
-                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -201,4 +178,3 @@ export default function PurchasePlanner() {
     </Card>
   )
 }
-
