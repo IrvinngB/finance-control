@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ import { CalendarIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { DayPicker } from "react-day-picker"
 import "react-day-picker/dist/style.css"
+import { getTransactionSummary } from '@/app/actions'
 
 interface PurchasePlan {
   canBuyNow: boolean
@@ -27,10 +28,27 @@ export default function PurchasePlanner() {
   const [itemName, setItemName] = useState('')
   const [cost, setCost] = useState('')
   const [date, setDate] = useState<Date | undefined>()
-  const [savings] = useState(1500) // Ejemplo de ahorros actuales
-  const [monthlyIncome] = useState(4000) // Ejemplo de ingreso mensual
-  const [monthlyExpenses] = useState(3000) // Ejemplo de gastos mensuales
   const [plan, setPlan] = useState<PurchasePlan | null>(null)
+  const [summary, setSummary] = useState({
+    totalIncome: 0,
+    totalExpenses: 0,
+    balance: 0,
+    remainingBudget: 0,
+  })
+
+  useEffect(() => {
+    // Obtener resumen de transacciones desde la API
+    const fetchSummary = async () => {
+      try {
+        const data = await getTransactionSummary()
+        setSummary(data)
+      } catch (error) {
+        console.error("Error al cargar el resumen de transacciones:", error)
+      }
+    }
+
+    fetchSummary()
+  }, [])
 
   const calculatePurchasePlan = () => {
     if (!date || !cost || !itemName) {
@@ -45,10 +63,10 @@ export default function PurchasePlanner() {
     const monthsUntilPurchase = Math.ceil(
       (date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)
     )
-    
-    const monthlySavings = monthlyIncome - monthlyExpenses
-    const currentSavings = savings
-    
+
+    const monthlySavings = summary.totalIncome - summary.totalExpenses
+    const currentSavings = summary.balance
+
     if (currentSavings >= totalNeeded) {
       setPlan({
         canBuyNow: true,
